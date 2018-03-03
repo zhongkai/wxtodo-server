@@ -40,7 +40,7 @@ router.get('/', function (req, res, next) {
       mysql(sessionTable).count('open_id as hasUser').where({
         open_id: openId
       })
-        .then(res => {
+        .then(function(res) {
           // 如果存在用户就更新session
           if (res[0].hasUser) {
             return mysql(sessionTable).update(sessionData).where({

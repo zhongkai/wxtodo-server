@@ -1,4 +1,5 @@
 var express = require('express');
+var bodyParser = require('body-parser')
 var config = require('./config');
 var lessonConfig = require('./lesson');
 var login = require('./routes/login');
@@ -6,6 +7,8 @@ var user = require('./routes/user');
 
 var app = express();
 var port = config.port;
+
+app.use(bodyParser.json());
 
 app.get('/', function (req, res) {
     res.send("<h1>Hello World! This Class is called '" + lessonConfig.lesson + "'. Teacher is " + lessonConfig.teacher + ".</h1>");
