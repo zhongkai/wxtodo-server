@@ -1,32 +1,27 @@
-const express = require('express');
-const router = express.Router();
+var express = require('express');
+var router = express.Router();
+var loginCheckMiddleware = require('../util').loginCheckMiddleware;
 
-router.get('/login', (req, res, next) => {
-    let code = req.query.code
+router.use(loginCheckMiddleware);
 
-    request.get({
-        uri: 'https://api.weixin.qq.com/sns/jscode2session',
-        json: true,
-        qs: {
-            grant_type: 'authorization_code',
-            appid: '你小程序的APPID',
-            secret: '你小程序的SECRET',
-            js_code: code
-        }
-    }, (err, response, data) => {
-        if (response.statusCode === 200) {
-            console.log("[openid]", data.openid)
-            console.log("[session_key]", data.session_key)
+// 中间件测试
+router.get('/', function (req, res, next) {
 
-            //TODO: 生成一个唯一字符串sessionid作为键，将openid和session_key作为值，存入redis，超时时间设置为2小时
-            //伪代码: redisStore.set(sessionid, openid + session_key, 7200)
+  if(req.session) {
+    //通过session里的openid获取用户信息
+    var userInfo = null;
 
-            res.json({ sessionid: sessionid })
-        } else {
-            console.log("[error]", err)
-            res.json(err)
-        }
+    res.json({
+      isLogin: true,
+      userInfo: userInfo
     });
+
+  }
+  else {
+    res.json({
+      isLogin: false
+    });
+  }
 
 });
 

@@ -1,20 +1,25 @@
-const express = require('express');
-const app = express();
-const port = 3000;
-const lessonConfig = require('./lesson');
-const user = require('./routes/users');
+var express = require('express');
+var config = require('./config');
+var lessonConfig = require('./lesson');
+var login = require('./routes/login');
+var user = require('./routes/user');
 
-app.get('/', (req, res) => {
-    res.send(`<h1>Hello World! This Class is called '${ lessonConfig.lesson }'. Teacher is ${ lessonConfig.teacher }.</h1>`);
+var app = express();
+var port = config.port;
+
+app.get('/', function (req, res) {
+    res.send("<h1>Hello World! This Class is called '" + lessonConfig.lesson + "'. Teacher is " + lessonConfig.teacher + ".</h1>");
 });
+
+app.use('/login', login);
 
 app.use('/user', user);
 
-app.listen(port, error => {
+app.listen(port, function(error) {
     if(error) {
         console.log('error!');
     }
     else {
-        console.log(`Server start! Listening on localhost:${ port }`);
+        console.log("Server start! Listening on localhost:" + port);
     }
-})
+});
