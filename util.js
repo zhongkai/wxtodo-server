@@ -40,7 +40,18 @@ var loginCheckMiddleware = function (req, res, next) {
 
 };
 
+function only(obj, keys) {
+  obj = obj || {};
+  if ('string' == typeof keys) keys = keys.split(/ +/);
+  return keys.reduce(function (ret, key) {
+    if (null == obj[key]) return ret;
+    ret[key] = obj[key];
+    return ret;
+  }, {});
+};
+
 module.exports = {
   mysql: mysql,
-  loginCheckMiddleware: loginCheckMiddleware
+  loginCheckMiddleware: loginCheckMiddleware,
+  only
 };

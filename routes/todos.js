@@ -2,7 +2,9 @@ var express = require('express');
 var router = express.Router();
 var loginCheckMiddleware = require('../util').loginCheckMiddleware;
 var mysql = require('../util').mysql;
+var only = require('../util').only;
 var todoTable = 'todo';
+var todoAttrs = 'content status tag1 tag2 tag3 extra';
 
 router.use(loginCheckMiddleware);
 
@@ -43,7 +45,7 @@ router.get('/:id', function (req, res, next) {
         });
       }
       else {
-        if (result[0].open_id != req.params.id) {
+        if (result[0].open_id != req.session.open_id) {
           res.status(403).json({
             error: '无权查看该todo'
           });
@@ -67,6 +69,8 @@ router.post('/', function (req, res, next) {
     });
     return;
   }
+
+  todo.tags = todo.tags || [];
 
   mysql(todoTable).insert({
     open_id: req.session.open_id,
@@ -96,9 +100,9 @@ router.delete('/:id', function (req, res, next) {
         });
       }
       else {
-        if (result[0].open_id != req.params.id) {
+        if (result[0].open_id != req.session.open_id) {
           res.status(403).json({
-            error: '无权查看该todo'
+            error: '无权操作该todo'
           });
         }
         else {
@@ -115,25 +119,111 @@ router.delete('/:id', function (req, res, next) {
 
 });
 
-// 删除所有已完成的todo
-router.delete('/', function() {
+// 局部更新todo
+router.patch('/:id', function (req, res, next) {
 
-  var clearStatus = req.query.status;
+  mysql(todoTable).where({
+    id: req.params.id
+  })
+    .select('*')
+    .then(function (result) {
+      if (result.length === 0) {
+        res.status(404).json({
+          error: 'todo不存在'
+        });
+      }
+      else {
+        if (result[0].open_id != req.session.open_id) {
+          res.status(403).json({
+            error: '无权操作该todo'
+          });
+        }
+        else {
+          mysql(todoTable).where({
+            id: req.params.id
+          })
+            .update(only(req.body, todoAttrs))
+            .then(function () {
+              res.json(result[0]);
+            });
+        }
+      }
+    });
 
-  if ([0, 1].indexOf(clearStatus) < 0) {
+});
+
+// 批量操作
+router.post('/batch', function(req, res, next) {
+
+  var body = req.body;
+  var action = body.action;
+  var items = body.items;
+
+  if(!items.length || ['create', 'update', 'delete'].indexOf(action) < 0) {
     res.status(400).json({
       error: '参数错误'
-    })
-  }
-  else {
-    mysql(todoTable).where({
-      open_id: req.session.open_id,
-      status: clearStatus
-    })
-    .then(function(result) {
-      //todo
-      res.json(result);
     });
+    return;
+  }
+
+  if(action == 'create') {
+
+    items = item.map(function(todo) {
+      todo.tags = todo.tags || [];
+      return {
+        open_id: req.session.open_id,
+        content: todo.content,
+        tag1: todo.tags[0] || '',
+        tag2: todo.tags[1] || '',
+        tag3: todo.tags[2] || '',
+        extra: todo.extra || ''
+      };
+    });
+
+    mysql(todoTable).insert(items)
+      .then(function (result) {
+        res.json(result);
+      });
+
+    return;
+  }
+
+
+  if(action == 'delete') {
+
+    mysql(todoTable).where({
+        open_id: req.session.open_id
+      })
+      .whereIn('id', items)
+      .delete()
+      .then(function (result) {
+        res.json(result);
+      });
+    
+    return;
+
+  }
+
+  if(action == 'update') {
+
+    if (!body.attrs) {
+      res.status(400).json({
+        error: '参数错误'
+      });
+      return;
+    }
+
+    mysql(todoTable).where({
+        open_id: req.session.open_id
+      })
+      .whereIn('id', items)
+      .update(only(attrs, todoAttrs))
+      .then(function (result) {
+        res.json(result);
+      });
+
+    return;
+    
   }
 
 });
