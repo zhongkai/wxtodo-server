@@ -217,7 +217,7 @@ router.post('/batch', function(req, res, next) {
         open_id: req.session.open_id
       })
       .whereIn('id', items)
-      .update(only(attrs, todoAttrs))
+      .update(only(body.attrs, todoAttrs))
       .then(function (result) {
         res.json(result);
       });
