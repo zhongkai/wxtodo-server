@@ -1,9 +1,10 @@
 var express = require('express');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 var config = require('./config');
 var lessonConfig = require('./lesson');
 var login = require('./routes/login');
 var user = require('./routes/user');
+var todos = require('./routes/todos');
 
 var app = express();
 var port = config.port;
@@ -17,6 +18,8 @@ app.get('/', function (req, res) {
 app.use('/login', login);
 
 app.use('/user', user);
+
+app.use('/todos', todos);
 
 app.listen(port, function(error) {
     if(error) {

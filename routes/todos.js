@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var loginCheckMiddleware = require('../util').loginCheckMiddleware;
-var mysqal = require('../util').mysql;
+var mysql = require('../util').mysql;
 var todoTable = 'todo';
 
 router.use(loginCheckMiddleware);
