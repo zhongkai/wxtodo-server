@@ -111,7 +111,7 @@ router.delete('/:id', function (req, res, next) {
           })
             .delete()
             .then(function() {
-              res.json(result[0]);
+              res.status(204).json({});
             });
         }
       }
