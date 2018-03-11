@@ -1,7 +1,7 @@
-const express = require('express');
-const app = express();
-const port = 3000;
-const lessonConfig = require('./lesson');
+var express = require('express');
+var app = express();
+var port = 3000;
+var lessonConfig = require('./lesson');
 
 app.get('/', function (req, res) {
     res.send("<h1>Hello World! This Class is called '" + lessonConfig.lesson + "'. Teacher is " + lessonConfig.teacher + ".</h1>");
@@ -9,9 +9,9 @@ app.get('/', function (req, res) {
 
 app.listen(port, function(error) {
     if(error) {
-        console.log('error!');
+        console.log("error!");
     }
     else {
-        console.log(`Server start! Listening on localhost:${ port }`);
+        console.log("Server start! Listening on localhost:" + port);
     }
 })
