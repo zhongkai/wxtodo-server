@@ -26,7 +26,10 @@ router.get('/', function (req, res, next) {
   })
     .select('*')
     .then(function (result) {
-      res.json(result);
+      res.json(result.map(function(item) {
+        delete item.open_id;
+        return item;
+      }));
     });
 
 });
@@ -72,16 +75,21 @@ router.post('/', function (req, res, next) {
 
   todo.tags = todo.tags || [];
 
-  mysql(todoTable).insert({
+  todo = {
     open_id: req.session.open_id,
     content: todo.content,
     tag1: todo.tags[0] || '',
     tag2: todo.tags[1] || '',
     tag3: todo.tags[2] || '',
     extra: todo.extra || ''
-  })
+  };
+  
+
+  mysql(todoTable).insert(todo)
     .then(function (result) {
-      res.json(result);
+      todo.id = result[0];
+      delete todo.open_id;
+      res.json(todo);
     });
 
 });
@@ -139,12 +147,18 @@ router.patch('/:id', function (req, res, next) {
           });
         }
         else {
+          var changedAttrs = only(req.body, todoAttrs);
+          if (req.body.tags && req.body.tags.length) {
+            changedAttrs.tag1 = req.body.tags[0] || '';
+            changedAttrs.tag2 = req.body.tags[1] || '';
+            changedAttrs.tag3 = req.body.tags[2] || '';
+          }
           mysql(todoTable).where({
             id: req.params.id
           })
-            .update(only(req.body, todoAttrs))
+            .update(changedAttrs)
             .then(function () {
-              res.json(result[0]);
+              res.json(changedAttrs);
             });
         }
       }

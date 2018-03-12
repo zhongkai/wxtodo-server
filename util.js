@@ -19,6 +19,11 @@ var loginCheckMiddleware = function (req, res, next) {
   var skey = req.headers.skey;
   req.session = null;
 
+  if(!skey) {
+    next();
+    return;
+  }
+
   mysql(sessionTable).select('*').where({
     skey: skey
   })

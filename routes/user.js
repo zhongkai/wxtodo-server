@@ -89,6 +89,7 @@ router.post('/', function (req, res, next) {
         };
         mysql(userTable).insert(userInfo)
           .then(function () {
+            delete userInfo.open_id;
             res.json(userInfo);
           });
       }
