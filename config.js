@@ -2,8 +2,8 @@ module.exports = {
   port: 5757,
   //过期时间，秒
   expireTime: 24 * 3600,
-  appid: 'wxd8236db661b94c82',
-  secret: '1469e5f70903103d324bea57d4be409d',
+  appid: 'your app id',
+  secret: 'you secret',
   mysql: {
     host: 'localhost',
     port: 3306,
