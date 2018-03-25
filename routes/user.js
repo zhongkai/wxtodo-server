@@ -17,8 +17,7 @@ var userTable = 'user';
 var cos = new CosSdk({
   AppId: qcloudConfig.qcloudAppId,
   SecretId: qcloudConfig.qcloudSecretId,
-  SecretKey: qcloudConfig.qcloudSecretKey,
-  Domain: `http://${config.cos.fileBucket}-${qcloudConfig.qcloudAppId}.cos.${config.cos.region}.myqcloud.com/`
+  SecretKey: qcloudConfig.qcloudSecretKey
 });
 
 router.use(loginCheckMiddleware);
@@ -143,62 +142,27 @@ router.post('/avatar', function(req, res, next) {
     else {
       var avatarFile = files.avatar[0];
       var fileExtension = avatarFile.path.split('.').pop();
-      var fileKey = req.session.open_id + '_' + (+new Date) + '.' + fileExtension;
+      var fileKey = parseInt(Math.random() * 10000000) + '_' + (+new Date) + '.' + fileExtension;
       
       var params = {
+        //todo
         Bucket: config.cos.fileBucket,
+        //ap-guangzhou
         Region: config.cos.region,
         Key: fileKey,
         Body: fs.readFileSync(avatarFile.path),
         ContentLength: avatarFile.size
       };
-      // 检查 bucket 是否存在，不存在则创建 bucket
-      cos.getService(params, (err, data) => {
+      
+      cos.putObject(params, function (err, data) {
+        // 删除临时文件
+        fs.unlink(avatarFile.path);
         if (err) {
-          // 删除临时文件
-          fs.unlink(avatarFile.path);
           next(err);
           return;
         }
-
-        // 检查提供的 Bucket 是否存在
-        const hasBucket = data.Buckets && data.Buckets.reduce(function (pre, cur) {
-          return pre || cur.Name === config.cos.fileBucket + '-' + qcloudConfig.qcloudAppId;
-        }, false)
-
-        if (data.Buckets && !hasBucket) {
-          // 写入文件存储
-          cos.putBucket({
-            Bucket: config.cos.fileBucket,
-            Region: config.cos.region,
-            ACL: 'public-read'
-          }, function (err, data) {
-            if (err) {
-              // 删除临时文件
-              fs.unlink(avatarFile.path);
-              next(err);
-            } else {
-              saveFile();
-            }
-          })
-        } else {
-          saveFile();
-        }
-      })
-
-      function saveFile() {
-        cos.putObject(params, function (err, data) {
-          // 删除临时文件
-          fs.unlink(avatarFile.path);
-          if (err) {
-            next(err);
-            return;
-          }
-          res.end(data.Location);
-        })
-      }
-
-
+        res.end(data.Location);
+      });
 
     }
 
