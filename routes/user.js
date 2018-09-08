@@ -97,7 +97,8 @@ router.post('/', function (req, res, next) {
 });
 
 //更新用户
-router.patch('/', function (req, res, next) {
+// router.patch('/', function (req, res, next) {
+router.put('/', function (req, res, next) {
 
   var userInfo = req.body;
 
@@ -161,6 +162,9 @@ router.post('/avatar', function(req, res, next) {
           next(err);
           return;
         }
+
+        if(!/^http/.test(data.Location)) data.Location = 'https://' + data.Location;
+
         res.end(data.Location);
       });
 

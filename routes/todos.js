@@ -128,7 +128,8 @@ router.delete('/:id', function (req, res, next) {
 });
 
 // 局部更新todo
-router.patch('/:id', function (req, res, next) {
+// router.patch('/:id', function (req, res, next) {
+router.put('/:id', function (req, res, next) {
 
   mysql(todoTable).where({
     id: req.params.id
