@@ -61,3 +61,6 @@ module.exports = {
 >初始化数据库和COS服务
 
 基本操作，请根据教学视频配置，不在叙述。
+
+> 用户登录过程
+![](https://img-blog.csdn.net/20170615100951655?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdzQxMDU4OTUwMg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
