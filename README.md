@@ -33,3 +33,31 @@ project.config.json配置为：
 ```
 
 练习使用Server端代码时，请根据教学视频，配置`config.js`文件，初始化数据库和COS服务。
+> 配置`config.js`文件
+
+修改`appid`, `secret` 以及数据库的用户密码(带`*`号的部分)
+```js
+module.exports = {
+  port: 5757,
+  //过期时间，秒
+  expireTime: 24 * 3600,
+  appid: '***********',
+  secret: '***********',
+  mysql: {
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    db: 'todo',
+    pass: '**********',
+    char: 'utf8mb4'
+  },
+  //文件云存储
+  cos: {
+    region: 'ap-guangzhou',
+    fileBucket: 'todo'
+  }
+};
+```
+>初始化数据库和COS服务
+
+基本操作，请根据教学视频配置，不在叙述。

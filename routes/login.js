@@ -15,9 +15,9 @@ router.get('/', function (req, res, next) {
 
   var code = req.query.code;
   var curTime = moment().format('YYYY-MM-DD HH:mm:ss');
-
-  request.get({
-    uri: 'https://api.weixin.qq.com/sns/jscode2session',
+  //Fix the  function to request()
+  request({
+    url: 'https://api.weixin.qq.com/sns/jscode2session',
     json: true,
     qs: {
       grant_type: 'authorization_code',
@@ -40,20 +40,20 @@ router.get('/', function (req, res, next) {
       mysql(sessionTable).count('open_id as hasUser').where({
         open_id: openId
       })
-        .then(function(res) {
+        .then(function (res) {
           // 如果存在用户就更新session
           if (res[0].hasUser) {
             return mysql(sessionTable).update(sessionData).where({
               open_id: openId
             });
-          } 
+          }
           // 如果不存在用户就新建session
           else {
             sessionData.open_id = openId;
             return mysql(sessionTable).insert(sessionData);
           }
         })
-        .then(function() {
+        .then(function () {
           res.json({
             skey: skey
           });
