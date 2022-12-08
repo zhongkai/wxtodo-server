@@ -6,7 +6,7 @@
     "cookie-parser": "~1.4.3",
     "cos-nodejs-sdk-v5": "^2.2.6",
     "crypto": "^1.0.1",
-    "express": "~4.15.2",
+    "express": "~4.17.3",
     "knex": "^0.14.4",
     "moment": "^2.20.1",
     "multiparty": "^4.1.3",
